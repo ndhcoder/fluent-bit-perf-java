@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Log4j
 public class ProcessUtils {
@@ -58,14 +59,14 @@ public class ProcessUtils {
                     if (m == 5) {//The fifth column is the physical memory value occupied by the process
                         String unit = info.substring(info.length() - 1);
                         if(unit.equalsIgnoreCase("g")) {
-                            monitorInfo.setMemUseSize(Double.parseDouble(info));
+                            BigDecimal memUseSize = new BigDecimal(info.substring(0, info.length() - 1));
+                            monitorInfo.setMemUseSize(memUseSize.doubleValue() * 1024);
                         } else if(unit.equalsIgnoreCase("m")) {
                             BigDecimal memUseSize = new BigDecimal(info.substring(0, info.length() - 1));
-                            monitorInfo.setMemUseSize(memUseSize.divide(DIVISOR, 2, BigDecimal.ROUND_HALF_UP).doubleValue());
+                            monitorInfo.setMemUseSize(memUseSize.doubleValue());
                         } else {
-                            BigDecimal memUseSize = new BigDecimal(info).divide(DIVISOR);
-                            monitorInfo.setMemUsageInBytes(memUseSize.longValue());
-                            monitorInfo.setMemUseSize(memUseSize.divide(DIVISOR, 2, BigDecimal.ROUND_HALF_UP).doubleValue());
+                            BigDecimal memUseSize = new BigDecimal(info);
+                            monitorInfo.setMemUseSize(memUseSize.divide(DIVISOR, 2, RoundingMode.HALF_UP).doubleValue());
                         }
                     }
 
